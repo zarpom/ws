@@ -1,0 +1,6 @@
+
+<%@ include file="../jspf/head.jspf"%>
+
+Click
+<a href="<c:url value="/logout" />">here</a>
+to logout

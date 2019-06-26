@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<ROLE id="1" name="admin" /> 
+	<USER id="1" login="admin" password="admin" email="email"
+		first_name="firstname" last_name="lastname" birthday="2008-01-01"
+		role_id="1" />
+</dataset>
+ 

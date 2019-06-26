@@ -1,0 +1,95 @@
+<beans:beans
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:ws="http://jax-ws.dev.java.net/spring/core"
+	xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+								http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                                http://www.springframework.org/schema/security
+                                http://www.springframework.org/schema/security/spring-security-4.2.xsd 
+                                http://www.springframework.org/schema/context 
+                                http://www.springframework.org/schema/context/spring-context.xsd 
+                                http://www.springframework.org/schema/util 
+                                http://www.springframework.org/schema/util/spring-util-4.0.xsd
+                                http://jax-ws.dev.java.net/spring/core 
+						        http://jax-ws.java.net/spring/core.xsd
+						        http://jax-ws.dev.java.net/spring/servlet 
+						        http://jax-ws.java.net/spring/servlet.xsd">
+
+	<context:annotation-config />
+
+
+	<context:component-scan
+		base-package="com.nixsolutions.litvinov.vitaliy" />
+	<http pattern="/rest/**" security="none" />
+
+	<http auto-config="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/admin*/**"
+			access="hasRole('admin')" />
+		<intercept-url pattern="/registration"
+			access="permitAll" />
+		<intercept-url pattern="/login" access="permitAll" />
+		<form-login login-page="/" default-target-url="/home"
+			username-parameter="login" password-parameter="password"
+			authentication-failure-url="/?error=true" />
+		<csrf request-matcher-ref="csrfMatcher" />
+	</http>
+
+	<authentication-manager>
+		<authentication-provider
+			user-service-ref="userDetailsServiceImpl" />
+	</authentication-manager>
+
+	<beans:bean id="userDetailsServiceImpl"
+		class="com.nixsolutions.litvinov.vitaliy.security.UserDetailsServiceImpl" />
+
+	<beans:bean id="csrfMatcher"
+		class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+		<beans:constructor-arg>
+			<util:list
+				value-type="org.springframework.security.web.util.matcher.RequestMatcher">
+				<beans:bean
+					class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+					<beans:constructor-arg name="pattern"
+						value="/rest/**" />
+					<beans:constructor-arg name="httpMethod"
+						value="POST" />
+				</beans:bean>
+				<beans:bean
+					class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+					<beans:constructor-arg name="pattern"
+						value="/rest/**" />
+					<beans:constructor-arg name="httpMethod"
+						value="PUT" />
+				</beans:bean>
+				<beans:bean
+					class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+					<beans:constructor-arg name="pattern"
+						value="/rest/**" />
+					<beans:constructor-arg name="httpMethod"
+						value="DELETE" />
+				</beans:bean>
+			</util:list>
+		</beans:constructor-arg>
+	</beans:bean>
+	<beans:bean id="customerService"
+		class="com.nixsolutions.litvinov.vitaliy.soap.CustomerServiceImpl">
+	</beans:bean>
+
+	<beans:bean id="customerEndpoint"
+		class="com.nixsolutions.litvinov.vitaliy.soap.CustomerEndpoint">
+		
+		<beans:property name="service" ref="customerService" />
+	</beans:bean>
+
+	<wss:binding url="/soap">
+		<wss:service>
+			<ws:service bean="#customerEndpoint" bindingID="http://www.w3.org/2003/05/soap/bindings/HTTP/" /> 
+		</wss:service>
+	</wss:binding>
+</beans:beans>
