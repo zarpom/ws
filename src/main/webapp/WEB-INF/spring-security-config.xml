@@ -77,19 +77,15 @@
 			</util:list>
 		</beans:constructor-arg>
 	</beans:bean>
-	<beans:bean id="customerService"
-		class="com.nixsolutions.litvinov.vitaliy.soap.CustomerServiceImpl">
-	</beans:bean>
 
-	<beans:bean id="customerEndpoint"
-		class="com.nixsolutions.litvinov.vitaliy.soap.CustomerEndpoint">
-		
-		<beans:property name="service" ref="customerService" />
+	<beans:bean id="userSoapEndpoint"
+		class="com.nixsolutions.litvinov.vitaliy.soap.UserSoapServiceImpl">
 	</beans:bean>
 
 	<wss:binding url="/soap">
 		<wss:service>
-			<ws:service bean="#customerEndpoint" bindingID="http://www.w3.org/2003/05/soap/bindings/HTTP/" /> 
+			<ws:service bean="#userSoapEndpoint"
+				bindingID="http://www.w3.org/2003/05/soap/bindings/HTTP/" />
 		</wss:service>
 	</wss:binding>
 </beans:beans>
